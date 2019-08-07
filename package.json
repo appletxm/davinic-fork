@@ -37,6 +37,10 @@
     "prettify": "prettier --write"
   },
   "lint-staged": {
+    "*.js": [
+      "npm run lint:eslint:fix",
+      "git add --force"
+    ],
     "*.json": [
       "prettier --write",
       "git add --force"
