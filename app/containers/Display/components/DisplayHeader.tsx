@@ -95,12 +95,14 @@ export class DisplayHeader extends React.Component<IDisplayHeaderProps, IDisplay
     if (!setting) {
       return {}
     }
+
     const defaultSetting = {}
     setting.params.forEach((param) => {
       param.items.forEach((item) => {
         defaultSetting[item.name] = item.default || null
       })
     })
+
     return defaultSetting
   }
 
@@ -128,6 +130,7 @@ export class DisplayHeader extends React.Component<IDisplayHeaderProps, IDisplay
 
   private addSecondaryGraph = (secondaryGraphType: SecondaryGraphTypes) => () => {
     const title = (slideSettings[secondaryGraphType] as any).title
+
     this.props.onAddLayers([{
       name: `${title}_${uuid(5)}`,
       type: GraphTypes.Secondary,

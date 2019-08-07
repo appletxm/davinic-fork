@@ -675,6 +675,7 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
         onStart={this.dragOnStart}
         onStop={this.dragOnStop}
         onDrag={this.onDrag}
+        onDobuleClick={this.onDobuleClick}
         handle={`.${styles.layer}`}
         position={position}
       >

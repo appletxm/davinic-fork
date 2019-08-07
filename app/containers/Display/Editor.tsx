@@ -782,6 +782,10 @@ export class Editor extends React.Component<IEditorProps, IEditorStates> {
     this.props.router.push(`/project/${pid}/widget/${widgetId}`)
   }
 
+  private doubleClickEdit = (itemId, delta) => {
+
+  }
+
   public render () {
     const {
       params,
@@ -845,6 +849,7 @@ export class Editor extends React.Component<IEditorProps, IEditorStates> {
           onResizeLayerStop={this.resizeLayerStop}
           onDragLayerStop={this.dragLayerStop}
           onEditWidget={this.toWorkbench}
+          onDobuleClickEdit={this.doubleClickEdit}
         />
         // </LayerContextMenu>
       )

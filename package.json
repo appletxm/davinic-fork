@@ -44,9 +44,7 @@
     "*.json": [
       "prettier --write",
       "git add --force"
-    ],
-    "*.ts": "npm run lint:tslint",
-    "*.tsx": "npm run lint:tslint"
+    ]
   },
   "pre-commit": "lint:staged",
   "resolutions": {
