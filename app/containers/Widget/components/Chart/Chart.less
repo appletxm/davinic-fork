@@ -1,0 +1,122 @@
+@import '../../../../assets/less/variable';
+
+.chartContainer {
+  flex: 1;
+}
+
+.scorecard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .scorecardContainer {
+    max-width: 100%;
+
+    .scorecardTitle {
+      padding: 8px 0 0;
+      display: block;
+
+      .ellipsis;
+
+      span {
+        display: inline-block;
+        line-height: 1;
+        white-space: pre;
+      }
+    }
+  }
+}
+
+.iframePage {
+  flex: 1;
+  border: none;
+}
+
+.formattedCell {
+  display: flex;
+  flex-direction: row;
+
+  &.left {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  &.center {
+    align-items: center;
+    justify-content: center;
+  }
+  &.right {
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+}
+
+.table {
+
+  &.noBorder {
+    :global {
+      .ant-table-thead > tr > th {
+        border: none;
+      }
+
+      .ant-table-tbody > tr > td {
+        border: none;
+      }
+    }
+  }
+
+  :global {
+    .ant-table,
+    .ant-pagination,
+    .ant-select {
+      font-style: 12px;
+    }
+
+    .ant-table-header {
+      // @FIXME
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+      background: transparent !important;
+      overflow-x: hidden !important;
+      overflow-y: scroll !important;
+    }
+
+    .ant-table-thead > tr {
+      background: transparent !important;
+    }
+
+    .ant-table-header-column {
+      width: 100%;
+    }
+
+    .ant-table-body {
+      background: transparent !important;
+    }
+
+    .react-resizable-handle {
+      position: absolute;
+      width: 10px;
+      height: 100%;
+      padding: 0;
+      bottom: 0;
+      right: -5px;
+      cursor: col-resize;
+      background: none;
+    }
+
+    .ant-table-placeholder {
+      display: none;
+    }
+  }
+
+  .selectedRow {
+    background-color: #d2eafb;
+   // background-color: transparent;
+
+  }
+  .unSelectedRow {
+    background-color: transparent;
+  }
+}
+
