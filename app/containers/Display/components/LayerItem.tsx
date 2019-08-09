@@ -12,16 +12,13 @@ import Video from 'components/Video'
 // import Menu from 'antd/lib/menu'
 // import LayerContextMenu from './LayerContextMenu'
 
-import {
-  GraphTypes,
-  SecondaryGraphTypes
-} from './util'
+import { GraphTypes, SecondaryGraphTypes } from './util'
 import { GRID_ITEM_MARGIN } from '../../../globalConstants'
 import { IFormedView } from 'containers/View/types'
 import Widget, { IWidgetConfig, IPaginationParams, RenderType } from '../../Widget/components/Widget'
 import { TextAlignProperty } from 'csstype'
-
 import { Resizable } from 'libs/react-resizable'
+import { createTextArea } from './labelLayerModels'
 
 const styles = require('../Display.less')
 
@@ -57,6 +54,7 @@ interface ILayerItemProps {
   onResizeLayer?: (itemId: number, deltaSize: IDeltaSize) => void
   onResizeLayerStop?: (itemId: number, deltaSize: IDeltaSize) => void
   onEditWidget?: (itemId: number, widgetId: number) => void
+  onTextLayerInputChange?: (field: any, value: any) => any
 }
 
 interface ILayerItemStates {
@@ -66,7 +64,8 @@ interface ILayerItemStates {
   layerTooltipPosition: [number, number]
   mousePos: number[]
   widgetProps: IWidgetConfig
-  currentTime: string
+  currentTime: string,
+  isEditable: boolean
 }
 
 export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemStates> {
@@ -87,7 +86,8 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
       layerTooltipPosition: [0, 0],
       mousePos: [-1, -1],
       widgetProps: null,
-      currentTime: ''
+      currentTime: '',
+      isEditable: false
     }
   }
 
@@ -238,7 +238,6 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
     this.setState({
       mousePos: [e.pageX, e.pageY]
     })
-    console.log('drag starts')
     return e.target !== data.node.lastElementChild
   }
 
@@ -251,7 +250,6 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
     if (mousePos[0] === e.pageX && mousePos[1] === e.pageY) {
       return
     }
-    console.log('drag stops')
     onDragLayerStop(itemId, data)
   }
 
@@ -285,8 +283,7 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
     onResizeLayerStop(itemId, delta)
   }
 
-  private onClickLayer = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation()
+  private selectedLayer = (e: React.MouseEvent<HTMLDivElement>) => {
     if (this.props.pure) { return }
     const mousePos = [e.pageX, e.pageY]
     const isSamePos = mousePos.every((pos, idx) => pos === this.state.mousePos[idx])
@@ -304,9 +301,23 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
     onSelectLayer({ id: layer.id, selected: !selected, exclusive})
   }
 
+  private onClickLayer = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    this.selectedLayer(e)
+  }
+
   private toWorkbench = () => {
     const { itemId, widget, onEditWidget } = this.props
     onEditWidget(itemId, widget.id)
+  }
+
+  private onDobuleClickLayer = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    this.setState({
+      isEditable: true
+    })
+    
+    createTextArea(this.refLayer, this)
   }
 
   private renderLayer = (layer) => {
@@ -466,13 +477,13 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
   }
 
   private renderLabelLayer = (layer) => {
-    const { layerParams } = this.state
+    const { layerParams, isEditable } = this.state
     const { pure, selected } = this.props
 
     const layerClass = classnames({
-      [styles.layer]: true,
-      [styles.view]: !pure,
-      [styles.selected]: selected
+      [styles.layer]: true && !isEditable,
+      [styles.view]: !pure && !isEditable,
+      [styles.selected]: selected && !isEditable
     })
     const layerStyle = this.getLayerStyle(layer, layerParams)
     const {
@@ -491,6 +502,11 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
     } = layerParams
 
     const labelStyle: React.CSSProperties = {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
       wordBreak: 'break-all',
       overflow: 'hidden',
       fontWeight,
@@ -505,6 +521,7 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
       paddingBottom: `${paddingBottom}px`,
       paddingLeft: `${paddingLeft}px`
     }
+
     if (textStyle) {
       labelStyle.fontStyle = textStyle.indexOf('italic') > -1 ? 'italic' : 'normal'
       labelStyle.textDecoration = textStyle.indexOf('underline') > -1 ? 'underline' : 'none'
@@ -515,6 +532,7 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
         className={layerClass}
         style={layerStyle}
         onClick={this.onClickLayer}
+        onDoubleClick={this.onDobuleClickLayer}
       >
         {this.wrapLayerTooltip(
           <p style={labelStyle}>
@@ -562,7 +580,6 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
       </div>
     )
   }
-
 
   private timer = null
   private renderTimerLayer = (layer) => {
@@ -675,7 +692,6 @@ export class LayerItem extends React.PureComponent<ILayerItemProps, ILayerItemSt
         onStart={this.dragOnStart}
         onStop={this.dragOnStop}
         onDrag={this.onDrag}
-        onDobuleClick={this.onDobuleClick}
         handle={`.${styles.layer}`}
         position={position}
       >

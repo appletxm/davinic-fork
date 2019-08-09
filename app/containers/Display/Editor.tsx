@@ -461,49 +461,7 @@ export class Editor extends React.Component<IEditorProps, IEditorStates> {
     return editLayers
   }
 
-  private dragLayer = (itemId, delta) => {
-    const editLayers = this.updateCurrentLocalLayers(itemId, {
-      ...delta,
-      deltaWidth: 0,
-      deltaHeight: 0
-    }, 'position')
-    this.props.toggleLayersDraggingStatus(editLayers.map((l) => l.id), true)
-  }
-
-  private dragLayerStop = (itemId, delta) => {
-    const editLayers = this.updateCurrentLocalLayers(itemId, {
-      ...delta,
-      deltaWidth: 0,
-      deltaHeight: 0
-    }, 'position')
-    this.onEditLayers(editLayers)
-    const { onClearEditorBaselines, toggleLayersDraggingStatus } = this.props
-    toggleLayersDraggingStatus(editLayers.map((l) => l.id), false)
-    onClearEditorBaselines()
-  }
-
-  private resizeLayer = (itemId, delta) => {
-    const editLayers = this.updateCurrentLocalLayers(itemId, {
-      ...delta,
-      deltaX: 0,
-      deltaY: 0
-    }, 'size')
-    this.props.toggleLayersResizingStatus(editLayers.map((l) => l.id), true)
-  }
-
-  private resizeLayerStop = (itemId, delta) => {
-    const { onResizeLayers } = this.props
-    const editLayers = this.updateCurrentLocalLayers(itemId, {
-      ...delta,
-      deltaX: 0,
-      deltaY: 0
-    }, 'size')
-    this.onEditLayers(editLayers)
-    onResizeLayers(editLayers.map((layer) => layer.id))
-    this.props.toggleLayersResizingStatus(editLayers.map((l) => l.id), false)
-  }
-
-  private formItemChange = (field, val) => {
+  private updateLayerSettingItems(field, val) {
     const { slideParams, currentLocalLayers } = this.state
 
     const {
@@ -552,6 +510,52 @@ export class Editor extends React.Component<IEditorProps, IEditorStates> {
     }
   }
 
+  private dragLayer = (itemId, delta) => {
+    const editLayers = this.updateCurrentLocalLayers(itemId, {
+      ...delta,
+      deltaWidth: 0,
+      deltaHeight: 0
+    }, 'position')
+    this.props.toggleLayersDraggingStatus(editLayers.map((l) => l.id), true)
+  }
+
+  private dragLayerStop = (itemId, delta) => {
+    const editLayers = this.updateCurrentLocalLayers(itemId, {
+      ...delta,
+      deltaWidth: 0,
+      deltaHeight: 0
+    }, 'position')
+    this.onEditLayers(editLayers)
+    const { onClearEditorBaselines, toggleLayersDraggingStatus } = this.props
+    toggleLayersDraggingStatus(editLayers.map((l) => l.id), false)
+    onClearEditorBaselines()
+  }
+
+  private resizeLayer = (itemId, delta) => {
+    const editLayers = this.updateCurrentLocalLayers(itemId, {
+      ...delta,
+      deltaX: 0,
+      deltaY: 0
+    }, 'size')
+    this.props.toggleLayersResizingStatus(editLayers.map((l) => l.id), true)
+  }
+
+  private resizeLayerStop = (itemId, delta) => {
+    const { onResizeLayers } = this.props
+    const editLayers = this.updateCurrentLocalLayers(itemId, {
+      ...delta,
+      deltaX: 0,
+      deltaY: 0
+    }, 'size')
+    this.onEditLayers(editLayers)
+    onResizeLayers(editLayers.map((layer) => layer.id))
+    this.props.toggleLayersResizingStatus(editLayers.map((l) => l.id), false)
+  }
+
+  private formItemChange = (field, val) => {
+    this.updateLayerSettingItems(field, val)
+  }
+
   private deleteLayers = () => {
     const { currentDisplay, currentSlide, currentLayersOperationInfo } = this.props
     const ids = Object.keys(currentLayersOperationInfo).filter((id) => currentLayersOperationInfo[id].selected)
@@ -565,6 +569,10 @@ export class Editor extends React.Component<IEditorProps, IEditorStates> {
   private onEditLayers = (layers) => {
     const { currentDisplay, currentSlide, onEditDisplayLayers } = this.props
     onEditDisplayLayers(currentDisplay.id, currentSlide.id, layers)
+  }
+
+  private updateTextLayerContent = (field, val) => {
+    this.updateLayerSettingItems(field, val)
   }
 
   private addLayers = (layers: any[], viewIds?: number[]) => {
@@ -782,10 +790,6 @@ export class Editor extends React.Component<IEditorProps, IEditorStates> {
     this.props.router.push(`/project/${pid}/widget/${widgetId}`)
   }
 
-  private doubleClickEdit = (itemId, delta) => {
-
-  }
-
   public render () {
     const {
       params,
@@ -849,7 +853,7 @@ export class Editor extends React.Component<IEditorProps, IEditorStates> {
           onResizeLayerStop={this.resizeLayerStop}
           onDragLayerStop={this.dragLayerStop}
           onEditWidget={this.toWorkbench}
-          onDobuleClickEdit={this.doubleClickEdit}
+          onTextLayerInputChange={this.updateTextLayerContent}
         />
         // </LayerContextMenu>
       )
